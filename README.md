@@ -12,7 +12,7 @@ A web-application that allows the user take a timed code-quiz consisting of mutl
 
 ## Usage 
 
-Access web-page here: ()
+Access web-page here: (https://omair-muhi.github.io/code-quiz/)
 ![Code-quiz main screen!]()
 
 ## Credits
