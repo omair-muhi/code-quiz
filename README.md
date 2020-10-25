@@ -17,6 +17,7 @@ Access web-page here: (https://omair-muhi.github.io/code-quiz/)
 
 ## Credits
 * UoT FSF Bcamp - this template
+* W3 Schools Bootstrap templates: (https://www.w3schools.com/bootstrap/bootstrap_templates.asp)
 
 ## License
 
