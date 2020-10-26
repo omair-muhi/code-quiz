@@ -76,6 +76,15 @@ function handleChoiceButtons(event) {
     // Display next question
     if (currentQuestion < 5)
         renderQuestion(quizQuestion[currentQuestion++]);
+    else {
+        // 1. Update <h3>, Delete <ol>
+        document.getElementById("quiz-question").innerText = "All done!";
+        var olTag = document.getElementById("quiz-choices");
+        document.getElementById("dynamic-content").removeChild(olTag);
+        // 2. Render input-form as prompt to enter initials
+        // 3. Create 
+    }
+
 }
 
 function handleStartButton(event) {
