@@ -98,9 +98,9 @@ function renderAllDoneScreen() {
 }
 // TIMER -----------------------------
 var secondsLeft = {
-    value: 3,
+    value: 10,
     getValue: function() { return this.value; },
-    resetValue: function() { this.value = 3; },
+    resetValue: function() { this.value = 10; },
     decrementValue: function() { this.value--; }
 };
 
@@ -145,16 +145,17 @@ function renderQuestion(questionObject) {
 // RENDERING -----------------------------
 // HANDLERS -----------------------------
 function handleChoiceButtons(event) {
-    // Display next question till we have more
-    if (currentQuestion < quizQuestion.length)
-        renderQuestion(quizQuestion[currentQuestion++]);
-    else {
-        // Render all-done screen when 
-        // last question has been clicked
-        // through
-        renderAllDoneScreen();
+    if (event.target.id.includes("choice-button-")) {
+        // Display next question till we have more
+        if (currentQuestion < quizQuestion.length)
+            renderQuestion(quizQuestion[currentQuestion++]);
+        else {
+            // Render all-done screen when 
+            // last question has been clicked
+            // through
+            renderAllDoneScreen();
+        }
     }
-
 }
 
 function handleStartButton(event) {
