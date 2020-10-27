@@ -2,40 +2,34 @@
 // Static array of objects containing quiz questions
 var quizQuestion = [{
         questionString: "1. What is HTML an acronym for?",
-        choices: ["Hyper Text Markup Language", "Highly Tuned Machine Learning", "Hollywood Themed Markup Language"]
+        choices: ["Hyper Text Markup Language", "Highly Tuned Machine Learning", "Hollywood Themed Markup Language"],
+        correctAnswer: "Hyper Text Markup Language"
     },
     {
         questionString: "2. What is CSS an acronym for?",
-        choices: ["Coding Style System", "Canadian Social Standards", "Cascading Style Sheets"]
+        choices: ["Coding Style System", "Canadian Social Standards", "Cascading Style Sheets"],
+        correctAnswer: "Cascading Style Sheets"
     },
     {
         questionString: "3. What is another name for Javascript?",
-        choices: ["HTTPscript", "ECMAscript", "WEBscript"]
+        choices: ["HTTPscript", "ECMAscript", "WEBscript"],
+        correctAnswer: "ECMAscript"
     },
 
     {
         questionString: "4. What type of braces does Javascripts use to declare a list?",
-        choices: ["Square braces", "Curly braces", "Round braces"]
+        choices: ["Square braces", "Curly braces", "Round braces"],
+        correctAnswer: "Square braces"
     },
     {
         questionString: "5. What type of braces does Javascripts use to declare an object?",
-        choices: ["Square braces", "Curly braces", "Round braces"]
+        choices: ["Square braces", "Curly braces", "Round braces"],
+        correctAnswer: "Curly braces"
     }
 ]
-var currentQuestion = 0;
+var currentQuestion = 0; // keep track of what question we're on
+var currentScore = 0; // keep track of score; increments on choice-button click only.
 // GLOBAL DATA -----------------------------
-// BUTTONS -----------------------------
-function createButton(buttonString) {
-    var btn = document.createElement("BUTTON");
-    btn.innerHTML = buttonString;
-    document.getElementById("dynamic-content").appendChild(btn);
-    return btn;
-}
-
-function deleteButton(buttonObject) {
-    document.getElementById("dynamic-content").removeChild(buttonObject);
-}
-// BUTTONS -----------------------------
 // RENDERING -----------------------------
 function renderInitialPlaceholders() {
     // 1. Create heading element
@@ -60,15 +54,14 @@ function renderInitialPlaceholders() {
     // add a handler for button clicks
     olTag.addEventListener("click", handleChoiceButtons);
 }
-var questionTimer = null;
 
-function renderAllDoneScreen() {
+function renderAllDoneScreen(doneString) {
     // Stop the timer
     clearInterval(questionTimer);
     // clear #timer-text
     document.getElementById("timer-text").innerText = "00:00";
     // 1. Update <h3>, Delete <ol>
-    document.getElementById("quiz-question").innerText = "All done!";
+    document.getElementById("quiz-question").innerText = doneString;
     var olTag = document.getElementById("quiz-choices");
     document.getElementById("dynamic-content").removeChild(olTag);
     // 2. Render input-form as prompt to enter initials
@@ -96,11 +89,24 @@ function renderAllDoneScreen() {
     inputSubmit.setAttribute("id", "submit-initials");
     formTag.appendChild(inputSubmit);
 }
+
+function renderQuestion(questionObject) {
+    // update question string in <H> element
+    document.getElementById("quiz-question").innerText = questionObject.questionString;
+    // update button text
+    for (var i = 0; i < questionObject.choices.length; i++) {
+        document.getElementById("choice-button-" + i).innerHTML = questionObject.choices[i];
+    }
+    // start the timer
+    startQuestionTimer();
+}
+// RENDERING -----------------------------
 // TIMER -----------------------------
+var questionTimer = null;
 var secondsLeft = {
-    value: 10,
+    value: 2,
     getValue: function() { return this.value; },
-    resetValue: function() { this.value = 10; },
+    resetValue: function() { this.value = this.value; },
     decrementValue: function() { this.value--; }
 };
 
@@ -108,11 +114,11 @@ function timerHandler() {
     secondsLeft.decrementValue();
     if (secondsLeft.getValue() <= 0) {
         // move to next question till we have more
-        if (currentQuestion < quizQuestion.length) {
-            renderQuestion(quizQuestion[currentQuestion++]);
+        if (currentQuestion < quizQuestion.length - 1) {
+            renderQuestion(quizQuestion[++currentQuestion]);
         } else {
             // Handle timer-expiry on last question
-            renderAllDoneScreen();
+            renderAllDoneScreen("You ran out of time!");
         }
     } else {
         // update #timer-text
@@ -127,33 +133,41 @@ function startQuestionTimer() {
     // reset #timer-text
     document.getElementById("timer-text").innerText = "00:00";
     // clear and restart timer
-    if (questionTimer !== null)
-        clearInterval(questionTimer);
+    clearInterval(questionTimer);
     questionTimer = setInterval(timerHandler, 1000);
 }
 // TIMER -----------------------------
-function renderQuestion(questionObject) {
-    // update question string in <H> element
-    document.getElementById("quiz-question").innerText = questionObject.questionString;
-    // update button text
-    for (var i = 0; i < questionObject.choices.length; i++) {
-        document.getElementById("choice-button-" + i).innerHTML = questionObject.choices[i];
-    }
-    // start the timer
-    startQuestionTimer();
+// BUTTONS -----------------------------
+function createButton(buttonString) {
+    var btn = document.createElement("BUTTON");
+    btn.innerHTML = buttonString;
+    document.getElementById("dynamic-content").appendChild(btn);
+    return btn;
 }
-// RENDERING -----------------------------
+
+function deleteButton(buttonObject) {
+    document.getElementById("dynamic-content").removeChild(buttonObject);
+}
+// BUTTONS -----------------------------
 // HANDLERS -----------------------------
 function handleChoiceButtons(event) {
     if (event.target.id.includes("choice-button-")) {
+        // Determine on right/wrong and then "yay/nay"
+        console.log(event.target);
+        console.log("User said:" + event.target.textContent.trim());
+        console.log("Correct answer is:" + quizQuestion[currentQuestion].correctAnswer);
+        if (event.target.textContent.trim() === quizQuestion[currentQuestion].correctAnswer)
+            alert("Correct!");
+        else
+            alert("Incorrect.");
         // Display next question till we have more
-        if (currentQuestion < quizQuestion.length)
-            renderQuestion(quizQuestion[currentQuestion++]);
-        else {
+        if (currentQuestion < quizQuestion.length - 1) {
+            renderQuestion(quizQuestion[++currentQuestion]);
+        } else {
             // Render all-done screen when 
             // last question has been clicked
             // through
-            renderAllDoneScreen();
+            renderAllDoneScreen("All done!");
         }
     }
 }
@@ -164,14 +178,15 @@ function handleStartButton(event) {
     // Create placeholders for rendering questions
     renderInitialPlaceholders();
     // Display first question
-    renderQuestion(quizQuestion[currentQuestion++]);
+    renderQuestion(quizQuestion[currentQuestion]);
 }
 // HANDLERS -----------------------------
-// INIT
+// INIT -----------------------------
 function initApplication() {
     // Initialize welcome screen
     var startQuizButton = createButton("START QUIZ");
     startQuizButton.addEventListener("click", handleStartButton);
 }
+// INIT -----------------------------
 // MAIN
 initApplication();
