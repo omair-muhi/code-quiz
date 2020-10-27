@@ -72,9 +72,8 @@ function renderQuestion(questionObject) {
 // RENDERING
 // HANDLERS
 function handleChoiceButtons(event) {
-    // alert("A choice was clicked!");
-    // Display next question
-    if (currentQuestion < 5)
+    // Display next question till we have more
+    if (currentQuestion < quizQuestion.length)
         renderQuestion(quizQuestion[currentQuestion++]);
     else {
         // 1. Update <h3>, Delete <ol>
@@ -86,8 +85,38 @@ function handleChoiceButtons(event) {
     }
 
 }
+var timerObject = null;
+var secondsLeft = 6;
+
+function timerHandler() {
+    secondsLeft--;
+    var timerTextTag = document.getElementById("timer-text");
+    if (secondsLeft <= 0) {
+        // re-initialize for next time
+        secondsLeft = 6;
+        // clear timer
+        clearInterval(timerObject);
+        // reset #timer-text
+        timerTextTag.innerText = "00:00";
+        // move to next question till we have more
+        if (currentQuestion < quizQuestion.length) {
+            renderQuestion(quizQuestion[currentQuestion++]);
+            // restart timer
+            startQuestionTimer();
+        }
+    } else {
+        // update #timer-text
+        timerTextTag.innerText = "00:" + (secondsLeft > 9 ? secondsLeft : ("0" + secondsLeft));
+    }
+}
+
+function startQuestionTimer() {
+    timerObject = setInterval(timerHandler, 1000);
+}
 
 function handleStartButton(event) {
+    // start timer
+    startQuestionTimer();
     // alert("Starting the quiz now...");
     deleteButton(event.target);
     // Create placeholders for rendering questions
