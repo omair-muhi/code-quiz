@@ -61,7 +61,7 @@ function renderAllDoneScreen(doneString) {
     // clear #timer-text
     document.getElementById("timer-text").innerText = "00:00";
     // 1. Update <h3>, Delete <ol>
-    document.getElementById("quiz-question").innerText = doneString;
+    document.getElementById("quiz-question").innerText = doneString + "You scored: " + currentScore + "/" + quizQuestion.length;
     var olTag = document.getElementById("quiz-choices");
     document.getElementById("dynamic-content").removeChild(olTag);
     // 2. Render input-form as prompt to enter initials
@@ -88,6 +88,8 @@ function renderAllDoneScreen(doneString) {
     inputSubmit.setAttribute("value", "Submit");
     inputSubmit.setAttribute("id", "submit-initials");
     formTag.appendChild(inputSubmit);
+    // register event listener for submit button
+    document.getElementById("submit-initials").addEventListener("click", handleSubmitInitialsButton);
 }
 
 function renderQuestion(questionObject) {
@@ -104,9 +106,9 @@ function renderQuestion(questionObject) {
 // TIMER -----------------------------
 var questionTimer = null;
 var secondsLeft = {
-    value: 2,
+    value: 5,
     getValue: function() { return this.value; },
-    resetValue: function() { this.value = this.value; },
+    resetValue: function() { this.value = 5; },
     decrementValue: function() { this.value--; }
 };
 
@@ -150,16 +152,25 @@ function deleteButton(buttonObject) {
 }
 // BUTTONS -----------------------------
 // HANDLERS -----------------------------
+var userHighscores = [];
+
+function handleSubmitInitialsButton(event) {
+    event.preventDefault();
+    var user = {};
+    user.initials = document.getElementById("initials").value;
+    user.score = currentScore;
+
+}
+
 function handleChoiceButtons(event) {
     if (event.target.id.includes("choice-button-")) {
         // Determine on right/wrong and then "yay/nay"
-        console.log(event.target);
-        console.log("User said:" + event.target.textContent.trim());
-        console.log("Correct answer is:" + quizQuestion[currentQuestion].correctAnswer);
-        if (event.target.textContent.trim() === quizQuestion[currentQuestion].correctAnswer)
-            alert("Correct!");
-        else
-            alert("Incorrect.");
+        if (event.target.textContent.trim() === quizQuestion[currentQuestion].correctAnswer) {
+            // alert("Correct!");
+            currentScore++;
+        } else {
+            // alert("Incorrect.");
+        }
         // Display next question till we have more
         if (currentQuestion < quizQuestion.length - 1) {
             renderQuestion(quizQuestion[++currentQuestion]);
