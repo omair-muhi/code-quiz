@@ -61,12 +61,13 @@ function renderAllDoneScreen(doneString) {
     // clear #timer-text
     document.getElementById("timer-text").innerText = "00:00";
     // 1. Update <h3>, Delete <ol>
-    document.getElementById("quiz-question").innerText = doneString + "You scored: " + currentScore + "/" + quizQuestion.length;
+    document.getElementById("quiz-question").innerText = doneString + " You scored: " + currentScore + "/" + quizQuestion.length;
     var olTag = document.getElementById("quiz-choices");
     document.getElementById("dynamic-content").removeChild(olTag);
     // 2. Render input-form as prompt to enter initials
     // create <form>
     var formTag = document.createElement("FORM");
+    formTag.setAttribute("id", "all-done-form");
     document.getElementById("dynamic-content").appendChild(formTag);
     // create <label> with attributes
     var labelTag = document.createElement("LABEL");
@@ -75,21 +76,35 @@ function renderAllDoneScreen(doneString) {
     formTag.appendChild(labelTag);
     // insert <br>
     formTag.appendChild(document.createElement("BR"));
-    // create <input> with attributes
+    // create text field for initials
     var inputLabel = document.createElement("INPUT");
     inputLabel.setAttribute("type", "text");
     inputLabel.setAttribute("id", "initials");
     inputLabel.setAttribute("name", "initials");
     inputLabel.setAttribute("value", "AA");
     formTag.appendChild(inputLabel);
-    // create <input> with submit attribute
+    // create Submit button
     var inputSubmit = document.createElement("INPUT");
     inputSubmit.setAttribute("type", "submit");
     inputSubmit.setAttribute("value", "Submit");
     inputSubmit.setAttribute("id", "submit-initials");
     formTag.appendChild(inputSubmit);
+    // create 'Go Back' button
+    var goBackButton = document.createElement("INPUT");
+    goBackButton.setAttribute("type", "button");
+    goBackButton.setAttribute("value", "Go Back");
+    goBackButton.setAttribute("id", "go-back");
+    formTag.appendChild(goBackButton);
+    // create 'Go Back' button
+    var viewHSButton = document.createElement("INPUT");
+    viewHSButton.setAttribute("type", "button");
+    viewHSButton.setAttribute("value", "View Highscores");
+    viewHSButton.setAttribute("id", "view-hs");
+    formTag.appendChild(viewHSButton);
     // register event listener for submit button
     document.getElementById("submit-initials").addEventListener("click", handleSubmitInitialsButton);
+    // register event listener for submit button
+    document.getElementById("go-back").addEventListener("click", handleGoBackButton);
 }
 
 function renderQuestion(questionObject) {
@@ -152,14 +167,28 @@ function deleteButton(buttonObject) {
 }
 // BUTTONS -----------------------------
 // HANDLERS -----------------------------
-var userHighscores = [];
+
+function handleGoBackButton(event) {
+    // clear the screen by remove <h3> and <form>
+    var h3Tag = document.getElementById("quiz-question");
+    document.getElementById("dynamic-content").removeChild(h3Tag);
+    var formTag = document.getElementById("all-done-form");
+    document.getElementById("dynamic-content").removeChild(formTag);
+    // re-init application
+    initApplication();
+}
 
 function handleSubmitInitialsButton(event) {
-    event.preventDefault();
+    // event.preventDefault();
     var user = {};
     user.initials = document.getElementById("initials").value;
     user.score = currentScore;
-
+    // Save to local array
+    var userHighscores = JSON.parse(localStorage.getItem("high-scores"));
+    userHighscores.push(user);
+    // Store highscores in localStorage.
+    localStorage.setItem("high-scores", JSON.stringify(userHighscores));
+    alert("Saved!");
 }
 
 function handleChoiceButtons(event) {
@@ -194,6 +223,9 @@ function handleStartButton(event) {
 // HANDLERS -----------------------------
 // INIT -----------------------------
 function initApplication() {
+    // Init globals
+    currentQuestion = 0;
+    currentScore = 0;
     // Initialize welcome screen
     var startQuizButton = createButton("START QUIZ");
     startQuizButton.addEventListener("click", handleStartButton);
