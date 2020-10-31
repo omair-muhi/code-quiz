@@ -122,14 +122,14 @@ function renderQuestion(questionObject) {
     // start the timer
     startQuestionTimer();
 }
-
 // RENDERING -----------------------------
 // TIMER -----------------------------
+const timerPerQuestion = 61;
 var questionTimer = null;
 var secondsLeft = {
-    value: 5,
+    value: timerPerQuestion,
     getValue: function() { return this.value; },
-    resetValue: function() { this.value = 5; },
+    resetValue: function() { this.value = timerPerQuestion; },
     decrementValue: function() { this.value--; }
 };
 
@@ -187,18 +187,31 @@ function handleGoBackButton(event) {
     // re-init application
     initApplication();
 }
-
+// Helper function
+function UpdateHighScores() {
+    var highScores = JSON.parse(localStorage.getItem("high-scores"));
+    var highScoresSorted = highScores.sort(function(score1, score2) { return (score2.score - score1.score) });
+    for (var i = 0; i < 3; i++) {
+        var nextTopScorer = highScoresSorted[i];
+        document.getElementById("top-score-" + i).innerText = nextTopScorer.initials + ": " + nextTopScorer.score + "/" + quizQuestion.length;
+    }
+}
+// Helper function
 function handleSubmitInitialsButton(event) {
-    // event.preventDefault();
-    var user = {};
-    user.initials = document.getElementById("initials").value;
-    user.score = currentScore;
-    // Save to local array
+    // 1. Retrieve from Local storage
     var userHighscores = JSON.parse(localStorage.getItem("high-scores"));
+    // 2. Record new user score
+    var user = {
+        initials: document.getElementById("initials").value,
+        score: currentScore
+    };
+    // 3. Add latest score
     userHighscores.push(user);
-    // Store highscores in localStorage.
+    // 3. Store back in localStorage.
     localStorage.setItem("high-scores", JSON.stringify(userHighscores));
-    alert("Saved!");
+    // alert("Saved!");
+    UpdateHighScores();
+    event.preventDefault(); // prevent browser from refreshing page
 }
 
 function handleChoiceButtons(event) {
@@ -225,8 +238,6 @@ function handleChoiceButtons(event) {
 function handleStartButton(event) {
     // Clear div for 1st question
     deleteButton(event.target);
-    // Render modal once for other elements to play with
-    // renderHighScoresModal();
     // Create placeholders for rendering questions
     renderInitialPlaceholders();
     // Display first question
@@ -250,6 +261,8 @@ function initApplication() {
         document.getElementById("high-scores-modal").style.display = "none";
     }
 
+    // Pull up High-Scores
+    UpdateHighScores();
     // Initialize welcome screen
     var startQuizButton = createButton("START QUIZ");
     startQuizButton.addEventListener("click", handleStartButton);
