@@ -103,8 +103,13 @@ function renderAllDoneScreen(doneString) {
     formTag.appendChild(viewHSButton);
     // register event listener for submit button
     document.getElementById("submit-initials").addEventListener("click", handleSubmitInitialsButton);
-    // register event listener for submit button
+    // register event listener for go-back button
     document.getElementById("go-back").addEventListener("click", handleGoBackButton);
+    // configure view highscores button
+    var viewHsButton = document.getElementById("view-hs");
+    viewHsButton.onclick = function() {
+        document.getElementById("high-scores-modal").style.display = "block";
+    }
 }
 
 function renderQuestion(questionObject) {
@@ -117,6 +122,7 @@ function renderQuestion(questionObject) {
     // start the timer
     startQuestionTimer();
 }
+
 // RENDERING -----------------------------
 // TIMER -----------------------------
 var questionTimer = null;
@@ -167,6 +173,10 @@ function deleteButton(buttonObject) {
 }
 // BUTTONS -----------------------------
 // HANDLERS -----------------------------
+function handleViewHsButton(event) {
+    var modalBox = document.getElementById("highScoresModal");
+    modalBox.style.display = "block";
+}
 
 function handleGoBackButton(event) {
     // clear the screen by remove <h3> and <form>
@@ -215,6 +225,8 @@ function handleChoiceButtons(event) {
 function handleStartButton(event) {
     // Clear div for 1st question
     deleteButton(event.target);
+    // Render modal once for other elements to play with
+    // renderHighScoresModal();
     // Create placeholders for rendering questions
     renderInitialPlaceholders();
     // Display first question
@@ -226,6 +238,18 @@ function initApplication() {
     // Init globals
     currentQuestion = 0;
     currentScore = 0;
+    // Register handler for nav-bar view-hs
+    var navBarViewHsElem = document.getElementById("view-hs-navbar");
+    navBarViewHsElem.onclick = function() {
+        document.getElementById("high-scores-modal").style.display = "block";
+    }
+
+    // register handler for modal close
+    var modalCloseSpan = document.getElementById("span-close");
+    modalCloseSpan.onclick = function() {
+        document.getElementById("high-scores-modal").style.display = "none";
+    }
+
     // Initialize welcome screen
     var startQuizButton = createButton("START QUIZ");
     startQuizButton.addEventListener("click", handleStartButton);

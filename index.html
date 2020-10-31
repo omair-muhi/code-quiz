@@ -24,7 +24,7 @@
             </div>
             <div class="collapse navbar-collapse" id="myNavbar">
                 <ul class="nav navbar-nav">
-                    <li class="active"><a href="#">View Highscores</a></li>
+                    <li id="view-hs-navbar" class="active"><a href="#">View Highscores</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <li id="timer">
@@ -65,7 +65,16 @@
     <footer class="container-fluid text-center">
         <p>Powered by <a href="https://www.w3schools.com/bootstrap/bootstrap_templates.asp" target="_blank">w3schools</a></p>
     </footer>
-    <script src="scripts/script.js"></script>
+    <div id="high-scores-modal" class="modal">
+        <div class="modal-content"><span class="close" id="span-close">×</span>
+            <h4>Top 3 scores:</h4>
+            <ol>
+                <li>AB: 5/5</li>
+            </ol>
+        </div>
+    </div>
+    <script src="scripts/script.js">
+    </script>
 </body>
 
 </html>
