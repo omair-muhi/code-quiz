@@ -135,12 +135,8 @@ function timerHandler() {
     secondsLeft.decrementValue(1); // seconds timer
     if (secondsLeft.getValue() <= 0) {
         // move to next question till we have more
-        // if (currentQuestion < quizQuestion.length - 1) {
-        //     renderQuestion(quizQuestion[++currentQuestion]);
-        // } else {
         // Handle timer-expiry on last question
         renderAllDoneScreen("You ran out of time!");
-        // }
     } else {
         // update #timer-text
         var seconds = secondsLeft.getValue();
@@ -181,7 +177,7 @@ function handleGoBackButton(event) {
     var formTag = document.getElementById("all-done-form");
     document.getElementById("dynamic-content").removeChild(formTag);
     // re-init application
-    initApplication();
+    initCodeQuizApplication();
 }
 // Helper function
 function UpdateHighScores() {
@@ -205,24 +201,17 @@ function handleSubmitInitialsButton(event) {
         userArray: []
     };
     if (localStorage.getItem("high-scores") !== null) {
-        console.log("Retrieving existing localdata...");
         userHighScores = JSON.parse(localStorage.getItem("high-scores"));
     }
-    console.log("Before pushing:" + userHighScores.userArray);
-    // console.log("Before pushing JSON has:" + JSON.parse(localStorage.getItem("high-scores")));
-    // console.log("Before pushing localStorage has:" + (localStorage.getItem("high-scores")));
     // 2. Record new user score
     var user = {
         initials: document.getElementById("initials").value,
         score: currentScore
     };
-    // 3. Add latest score
-    console.log("Pushing score=" + user.score + "for user=" + user.initials);
+    // 3. Add latest score   
     userHighScores.userArray.push(user);
-    console.log("After pushing:" + userHighScores.userArray);
     // 3. Store back in localStorage.
     localStorage.setItem("high-scores", JSON.stringify(userHighScores));
-    // alert("Saved!");
     UpdateHighScores();
     event.preventDefault(); // prevent browser from refreshing page
 }
@@ -231,7 +220,6 @@ function handleChoiceButtons(event) {
     if (event.target.id.includes("choice-button-")) {
         // Determine on right/wrong and then "yay/nay"
         if (event.target.textContent.trim() === quizQuestion[currentQuestion].correctAnswer) {
-            // alert("Correct!");
             currentScore++;
         } else {
             secondsLeft.decrementValue(4); // decrement timer on wrong answer
@@ -260,7 +248,7 @@ function handleStartButton(event) {
 }
 // HANDLERS -----------------------------
 // INIT -----------------------------
-function initApplication() {
+function initCodeQuizApplication() {
     // Init globals
     currentQuestion = 0;
     currentScore = 0;
@@ -284,4 +272,4 @@ function initApplication() {
 }
 // INIT -----------------------------
 // MAIN
-initApplication();
+initCodeQuizApplication();

@@ -12,7 +12,7 @@
 </head>
 
 <body>
-
+    <!-- Collapsible navbar -->
     <nav class="navbar navbar-inverse">
         <div class="container-fluid">
             <div class="navbar-header">
@@ -33,11 +33,13 @@
                             00:00
                         </span>
                     </li>
+                    <!-- #timer -->
                 </ul>
             </div>
+            <!-- #myNavbar -->
         </div>
     </nav>
-
+    <!-- This is where all the dynamic content is added -->
     <div class="container-fluid text-center">
         <div class="row content">
             <div class="col-sm-12 text-left" id="dynamic-content">
@@ -50,18 +52,20 @@
                             Each question has multiple answers. Please choose the best answer.
                         </li>
                         <li>
-                            You have 60 seconds to answer each question before the next question is displayed.
+                            You have 60 seconds to answer five questions before the quiz ends.
                         </li>
                     </ul>
                 </p>
                 <hr>
             </div>
+            <!-- #dynamic-content -->
         </div>
     </div>
 
     <footer class="container-fluid text-center">
         <p>Powered by <a href="https://www.w3schools.com/bootstrap/bootstrap_templates.asp" target="_blank">w3schools</a></p>
     </footer>
+    <!-- Modal for displaying top three scores -->
     <div id="high-scores-modal" class="modal">
         <div class="modal-content"><span class="close" id="span-close">×</span>
             <h4>Top 3 scores:</h4>
@@ -72,8 +76,8 @@
             </ol>
         </div>
     </div>
-    <script src="scripts/script.js">
-    </script>
+    <!-- .modal -->
+    <script src="scripts/script.js"></script>
 </body>
 
 </html>
