@@ -119,8 +119,6 @@ function renderQuestion(questionObject) {
     for (var i = 0; i < questionObject.choices.length; i++) {
         document.getElementById("choice-button-" + i).innerHTML = questionObject.choices[i];
     }
-    // start the timer
-    startQuestionTimer();
 }
 // RENDERING -----------------------------
 // TIMER -----------------------------
@@ -130,19 +128,19 @@ var secondsLeft = {
     value: timerPerQuestion,
     getValue: function() { return this.value; },
     resetValue: function() { this.value = timerPerQuestion; },
-    decrementValue: function() { this.value--; }
+    decrementValue: function(numSeconds) { this.value -= numSeconds; }
 };
 
 function timerHandler() {
-    secondsLeft.decrementValue();
+    secondsLeft.decrementValue(1); // seconds timer
     if (secondsLeft.getValue() <= 0) {
         // move to next question till we have more
-        if (currentQuestion < quizQuestion.length - 1) {
-            renderQuestion(quizQuestion[++currentQuestion]);
-        } else {
-            // Handle timer-expiry on last question
-            renderAllDoneScreen("You ran out of time!");
-        }
+        // if (currentQuestion < quizQuestion.length - 1) {
+        //     renderQuestion(quizQuestion[++currentQuestion]);
+        // } else {
+        // Handle timer-expiry on last question
+        renderAllDoneScreen("You ran out of time!");
+        // }
     } else {
         // update #timer-text
         var seconds = secondsLeft.getValue();
@@ -155,8 +153,6 @@ function startQuestionTimer() {
     secondsLeft.resetValue();
     // reset #timer-text
     document.getElementById("timer-text").innerText = "00:00";
-    // clear and restart timer
-    clearInterval(questionTimer);
     questionTimer = setInterval(timerHandler, 1000);
 }
 // TIMER -----------------------------
@@ -189,26 +185,43 @@ function handleGoBackButton(event) {
 }
 // Helper function
 function UpdateHighScores() {
-    var highScores = JSON.parse(localStorage.getItem("high-scores"));
-    var highScoresSorted = highScores.sort(function(score1, score2) { return (score2.score - score1.score) });
-    for (var i = 0; i < 3; i++) {
-        var nextTopScorer = highScoresSorted[i];
-        document.getElementById("top-score-" + i).innerText = nextTopScorer.initials + ": " + nextTopScorer.score + "/" + quizQuestion.length;
+    if (localStorage.getItem("high-scores") !== null) {
+        // Retrieve existing JSON object for high scores
+        var highScores = JSON.parse(localStorage.getItem("high-scores"));
+        // Sort the array in descending order
+        var highScoresSorted = highScores.userArray.sort(function(user1, user2) { return (user2.score - user1.score) });
+        var numScores = highScoresSorted.length;
+        // Loop through sorted scores and populate <li> in modal
+        for (var i = 0; i < (numScores >= 3 ? 3 : numScores); i++) {
+            var nextTopScorer = highScoresSorted[i];
+            document.getElementById("top-score-" + i).innerText = nextTopScorer.initials + ": " + nextTopScorer.score + "/" + quizQuestion.length;
+        }
     }
 }
 // Helper function
 function handleSubmitInitialsButton(event) {
     // 1. Retrieve from Local storage
-    var userHighscores = JSON.parse(localStorage.getItem("high-scores"));
+    var userHighScores = {
+        userArray: []
+    };
+    if (localStorage.getItem("high-scores") !== null) {
+        console.log("Retrieving existing localdata...");
+        userHighScores = JSON.parse(localStorage.getItem("high-scores"));
+    }
+    console.log("Before pushing:" + userHighScores.userArray);
+    // console.log("Before pushing JSON has:" + JSON.parse(localStorage.getItem("high-scores")));
+    // console.log("Before pushing localStorage has:" + (localStorage.getItem("high-scores")));
     // 2. Record new user score
     var user = {
         initials: document.getElementById("initials").value,
         score: currentScore
     };
     // 3. Add latest score
-    userHighscores.push(user);
+    console.log("Pushing score=" + user.score + "for user=" + user.initials);
+    userHighScores.userArray.push(user);
+    console.log("After pushing:" + userHighScores.userArray);
     // 3. Store back in localStorage.
-    localStorage.setItem("high-scores", JSON.stringify(userHighscores));
+    localStorage.setItem("high-scores", JSON.stringify(userHighScores));
     // alert("Saved!");
     UpdateHighScores();
     event.preventDefault(); // prevent browser from refreshing page
@@ -221,7 +234,7 @@ function handleChoiceButtons(event) {
             // alert("Correct!");
             currentScore++;
         } else {
-            // alert("Incorrect.");
+            secondsLeft.decrementValue(4); // decrement timer on wrong answer
         }
         // Display next question till we have more
         if (currentQuestion < quizQuestion.length - 1) {
@@ -242,6 +255,8 @@ function handleStartButton(event) {
     renderInitialPlaceholders();
     // Display first question
     renderQuestion(quizQuestion[currentQuestion]);
+    // start the quiz timer
+    startQuestionTimer();
 }
 // HANDLERS -----------------------------
 // INIT -----------------------------
